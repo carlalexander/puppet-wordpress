@@ -54,7 +54,7 @@ define wordpress::resource::installation (
   }
 
   exec { 'wp-core-config':
-    command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
+    command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
     cwd     => $target,
     creates => "${target}/wp-config.php",
     require => Exec['wp-core-download']
