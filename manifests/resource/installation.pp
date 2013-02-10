@@ -47,10 +47,17 @@ define wordpress::resource::installation (
   }
 
   exec { 'wp-core-download':
-    command => '/usr/bin/wp core download',
+    command => '/usr/bin/curl -f http://wordpress.org/latest.tar.gz | tar xz',
     cwd     => $target,
     creates => "${target}/wp-config-sample.php",
+    notify  => Exec['wp-core-install'],
     require => File[$target]
+  }
+
+  exec { 'wp-core-install':
+    command     => '/bin/cp -r wordpress/* . && /bin/rm -rf wordpress',
+    cwd         => $target,
+    refreshonly => true,
   }
 
   exec { 'wp-core-config':

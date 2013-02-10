@@ -26,4 +26,8 @@ class wordpress::package {
     source   => '/tmp/php-wpcli_0.8-1_all.deb',
     require  => Exec['wget-wpcli']
   }
+
+  package { 'curl':
+    ensure => latest
+  }
 }

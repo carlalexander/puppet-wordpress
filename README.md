@@ -15,7 +15,7 @@ To install and bootstrap wordpress, simply add the class defintion:
 To setup a new wordpress installation
 
     wordpress::resource::installation { 'test.blog':
-      target   => '/var/www',
-      user     => 'root',
-      password => 'password'
+      target     => '/var/www',
+      dbuser     => 'root',
+      dbpassword => 'password'
     }
