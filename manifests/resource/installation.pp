@@ -4,8 +4,9 @@
 #
 # Parameters:
 #   [*target*]     - Target directory
-#   [*dbhost*]     - Database host
-#   [*dbname*]     - Database name
+#   [*owner*]      - Owner. Default: root
+#   [*dbhost*]     - Database host. Default: localhost
+#   [*dbname*]     - Database name. Default: wordpress
 #   [*dbuser*]     - Database user
 #   [*dbpassword*] - Database password
 #   [*dbprefix*]   - Database table prefix
@@ -23,6 +24,7 @@
 #  }
 define wordpress::resource::installation (
   $target       = undef,
+  $owner        = 'root',
   $dbhost       = 'localhost',
   $dbname       = 'wordpress',
   $dbuser       = undef,
@@ -30,8 +32,8 @@ define wordpress::resource::installation (
   $dbprefix     = 'wp_'
 ) {
   File {
-    owner   => 'root',
-    group   => 'root',
+    owner   => $owner,
+    group   => $owner,
     mode    => '0644',
   }
 
@@ -46,7 +48,7 @@ define wordpress::resource::installation (
     ensure => directory
   }
 
-  exec { 'wp-core-download':
+  exec { "wp-core-download-${name}":
     command => '/usr/bin/curl -f http://wordpress.org/latest.tar.gz | tar xz',
     cwd     => $target,
     creates => "${target}/wp-config-sample.php",
@@ -54,16 +56,21 @@ define wordpress::resource::installation (
     require => File[$target]
   }
 
-  exec { 'wp-core-install':
+  exec { "wp-core-install-${name}":
     command     => '/bin/cp -r wordpress/* . && /bin/rm -rf wordpress',
     cwd         => $target,
     refreshonly => true,
   }
 
-  exec { 'wp-core-config':
+  exec { "wp-core-config-${name}":
     command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
     cwd     => $target,
     creates => "${target}/wp-config.php",
     require => Exec['wp-core-download']
+  }
+
+  file { "${target}/wp-config.php":
+    mode    => '0600',
+    require => Exec["wp-core-config-${name}"]
   }
 }
