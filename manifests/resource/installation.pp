@@ -67,7 +67,6 @@ define wordpress::resource::installation (
     command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
     cwd     => $target,
     creates => "${target}/wp-config.php",
-    notify  => File[$target],
     require => Exec["wp-core-install-${name}"]
   }
 
