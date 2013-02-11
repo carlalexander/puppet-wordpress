@@ -52,7 +52,7 @@ define wordpress::resource::installation (
     command => '/usr/bin/curl -f http://wordpress.org/latest.tar.gz | tar xz',
     cwd     => $target,
     creates => "${target}/wp-config-sample.php",
-    notify  => Exec['wp-core-install'],
+    notify  => Exec["wp-core-install-${name}"],
     require => File[$target]
   }
 
@@ -66,7 +66,7 @@ define wordpress::resource::installation (
     command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
     cwd     => $target,
     creates => "${target}/wp-config.php",
-    require => Exec['wp-core-download']
+    require => Exec["wp-core-install-${name}"]
   }
 
   file { "${target}/wp-config.php":
