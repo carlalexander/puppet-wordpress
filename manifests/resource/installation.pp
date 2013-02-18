@@ -40,9 +40,6 @@ define wordpress::resource::installation (
   if ($target == undef) {
     fail('You must specify a target location for your wordpress installation')
   }
-  if (($dbuser == undef) or ($dbpassword == undef)) {
-    fail('You must define a database user and password')
-  }
 
   file { $target:
     ensure  => directory,
@@ -63,15 +60,17 @@ define wordpress::resource::installation (
     refreshonly => true,
   }
 
-  exec { "wp-core-config-${name}":
-    command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
-    cwd     => $target,
-    creates => "${target}/wp-config.php",
-    require => Exec["wp-core-install-${name}"]
-  }
+  if (($dbuser != undef) and ($dbpassword != undef)) {
+    exec { "wp-core-config-${name}":
+      command => "/usr/bin/wp core config --dbname=${dbname} --dbuser=${dbuser} --dbpass=${dbpassword} --dbhost=${dbhost} --dbprefix=${dbprefix}",
+      cwd     => $target,
+      creates => "${target}/wp-config.php",
+      require => Exec["wp-core-install-${name}"]
+    }
 
-  file { "${target}/wp-config.php":
-    mode    => '0600',
-    require => Exec["wp-core-config-${name}"]
+    file { "${target}/wp-config.php":
+      mode    => '0600',
+      require => Exec["wp-core-config-${name}"]
+    }
   }
 }
