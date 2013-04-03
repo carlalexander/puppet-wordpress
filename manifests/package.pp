@@ -1,4 +1,4 @@
-# Class: wordpres::package
+# Class: wordpress::package
 #
 # This module manages WP-CLI package installation.
 #
