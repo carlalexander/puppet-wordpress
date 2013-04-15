@@ -51,7 +51,6 @@ define wordpress::resource::installation (
     cwd     => $target,
     creates => "${target}/wp-config-sample.php",
     notify  => Exec["wp-core-install-${name}"],
-    require => File[$target]
   }
 
   exec { "wp-core-install-${name}":
